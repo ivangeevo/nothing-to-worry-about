@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "ntwa",
+  "version": "${version}",
+  "name": "Nothing To Worry About",
+  "description": "Really, It's Nothing.",
+  "authors": ["ivangeevo"],
+  "contact": {},
+  "license": "CC-BY-4.0",
+  "icon": "assets/ntwa/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "org.btwr.ntwa.datagen.NTWAModDataGenerator"
+    ],
+    "client": ["org.btwr.ntwa.NTWAModClient"],
+    "main": ["org.btwr.ntwa.NTWAMod"]
+  },
+  "mixins": [
+    "ntwa.mixins.json",
+    {
+      "config": "ntwa.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}",
+    "btwr_sl": ">=${btwr_sl_version}"
+  }
+}
