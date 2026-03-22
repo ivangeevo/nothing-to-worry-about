@@ -2,7 +2,16 @@ package org.btwr.ntwa.entity.possession;
 
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.ChickenEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.particle.ItemStackParticleEffect;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
@@ -14,7 +23,7 @@ import java.util.function.BiConsumer;
 
 public class PossessionManager {
 
-    private static final Map<EntityType<?>, BiConsumer<LivingEntity, PossessionData>> BEHAVIORS = PossessionBehaviors.BEHAVIORS;
+    private static final Map<EntityType<?>, BiConsumer<LivingEntity, PossessionData>> BEHAVIORS = EntityTickPossessionBehaviors.TICK_BEHAVIORS;
 
     public static PossessionSource<?> determineSource(LivingEntity entity) {
         var world = entity.getWorld();
@@ -44,7 +53,114 @@ public class PossessionManager {
     }
 
     public static void onFullPossession(LivingEntity entity, PossessionData data) {
-        // hook for later AI/buffs/visuals
+        if (entity instanceof ChickenEntity chicken) {
+            var world = chicken.getWorld();
+            var random = chicken.getRandom();
+
+            double x = chicken.getX();
+            double y = chicken.getY();
+            double z = chicken.getZ();
+
+            if (!world.isClient()) {
+                // --- Sounds (server-side so they sync) ---
+                chicken.playSound(
+                        SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
+                        1.0F,
+                        (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F
+                );
+
+                chicken.playSound(SoundEvents.ENTITY_CHICKEN_HURT, 2.0F, random.nextFloat() * 0.4F + 1.2F);
+            }
+
+            // --- Particles (must be server -> send to clients) ---
+            if (world instanceof ServerWorld serverWorld) {
+
+                // light "blood mist" (reddust equivalent)
+                for (int i = 0; i < 10; i++) {
+                    serverWorld.spawnParticles(
+                            DustParticleEffect.DEFAULT,
+                            x + random.nextDouble(),
+                            y + 1.0D + random.nextDouble(),
+                            z + random.nextDouble(),
+                            1,
+                            0, 0, 0,
+                            0
+                    );
+                }
+
+                // drip lava
+                for (int i = 0; i < 10; i++) {
+                    serverWorld.spawnParticles(
+                            ParticleTypes.DRIPPING_LAVA,
+                            x - 0.5D + random.nextDouble(),
+                            y + random.nextDouble() * 0.5,
+                            z - 0.5D + random.nextDouble(),
+                            1,
+                            0, 0, 0,
+                            0
+                    );
+                }
+
+                // main explosion spray (redstone/item crack equivalent)
+                for (int i = 0; i < 300; i++) {
+                    serverWorld.spawnParticles(
+                            new ItemStackParticleEffect(ParticleTypes.ITEM, Items.REDSTONE.getDefaultStack()),
+                            x + random.nextDouble() - 0.5D,
+                            y - 1.0D,
+                            z + random.nextDouble() - 0.5D,
+                            1,
+                            (random.nextDouble() - 0.5D) * 0.5D,
+                            0.2D + random.nextDouble() * 0.6D,
+                            (random.nextDouble() - 0.5D) * 0.5D,
+                            0
+                    );
+                }
+
+                // bone fragments
+                for (int i = 0; i < 25; i++) {
+                    serverWorld.spawnParticles(
+                            new ItemStackParticleEffect(ParticleTypes.ITEM, Items.BONE.getDefaultStack()),
+                            x + random.nextDouble() - 0.5D,
+                            y - 1.0D,
+                            z + random.nextDouble() - 0.5D,
+                            1,
+                            (random.nextDouble() - 0.5D) * 0.5D,
+                            0.2D + random.nextDouble() * 0.6D,
+                            (random.nextDouble() - 0.5D) * 0.5D,
+                            0 // matches "iconcrack_352"
+                    );
+                }
+            }
+
+            // --- Feather explosion ---
+            int featherCount = 3 + random.nextInt(3); // 3–5
+
+            for (int i = 0; i < featherCount; i++) {
+                ItemStack stack = new ItemStack(Items.FEATHER);
+
+                double xPos = x + (random.nextDouble() - 0.5D) * 2D;
+                double yPos = y + 0.5D;
+                double zPos = z + (random.nextDouble() - 0.5D) * 2D;
+
+                ItemEntity item = new ItemEntity(world, xPos, yPos, zPos, stack);
+
+                item.setVelocity(
+                        (random.nextDouble() - 0.5D) * 0.5D,
+                        0.2D + random.nextDouble() * 0.3D,
+                        (random.nextDouble() - 0.5D) * 0.5D
+                );
+
+                item.setPickupDelay(10);
+                world.spawnEntity(item);
+            }
+
+            // --- Spread possession ---
+            //spreadPossession(chicken, 16.0, new PossessionSource.EntityDeath(chicken));
+
+            // --- Kill chicken ---
+            chicken.discard();
+        }
+
     }
 
     public static boolean spreadPossession(

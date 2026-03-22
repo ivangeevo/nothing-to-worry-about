@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
-public class PossessionBehaviors {
+public class EntityTickPossessionBehaviors {
 
-    public static final Map<EntityType<?>, BiConsumer<LivingEntity, PossessionData>> BEHAVIORS = new HashMap<>();
+    public static final Map<EntityType<?>, BiConsumer<LivingEntity, PossessionData>> TICK_BEHAVIORS = new HashMap<>();
 
     public static void register() {
-        BEHAVIORS.put(EntityType.SHEEP, PossessionBehaviors::tickSheep);
+        TICK_BEHAVIORS.put(EntityType.SHEEP, EntityTickPossessionBehaviors::tickSheep);
     }
 
     private static void tickSheep(LivingEntity entity, PossessionData data) {
@@ -50,7 +50,5 @@ public class PossessionBehaviors {
         sheep.setNoGravity(false);
         sheep.setOnGround(false); // mimic BTW’s airborne state
     }
-
-
 
 }

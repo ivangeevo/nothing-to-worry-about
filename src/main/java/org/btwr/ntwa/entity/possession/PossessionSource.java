@@ -1,5 +1,6 @@
 package org.btwr.ntwa.entity.possession;
 
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.WolfEntity;
 
 import java.util.Optional;
@@ -29,8 +30,8 @@ public abstract class PossessionSource<T> {
         public NetherPortal() { super(PossessionType.NETHER_PORTAL); }
     }
 
-    public static class EntityDeath extends PossessionSource<Integer> {
-        public EntityDeath(int entityId) { super(PossessionType.ENTITY_DEATH, entityId); }
+    public static class EntityDeath extends PossessionSource<LivingEntity> {
+        public EntityDeath(LivingEntity entity) { super(PossessionType.ENTITY_DEATH, entity); }
     }
 
     public static class Wolf extends PossessionSource<WolfEntity> {
