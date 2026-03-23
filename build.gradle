@@ -22,9 +22,9 @@ loom {
 }
 
 fabricApi {
-    configureDataGeneration {
+    configureDataGeneration({
         modId = "ntwa"
-    }
+    })
 }
 
 repositories {

@@ -3,7 +3,7 @@ package org.btwr.ntwa;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import org.btwr.ntwa.data.ModDataAttachments;
-import org.btwr.ntwa.entity.possession.EntityTickPossessionBehaviors;
+import org.btwr.ntwa.entity.possession.EntityPossessionBehaviors;
 import org.btwr.ntwa.entity.possession.PossessionManager;
 import org.btwr.ntwa.entity.possession.PossessionSource;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class NTWAMod implements ModInitializer {
     @Override
     public void onInitialize() {
         ModDataAttachments.register();
-        EntityTickPossessionBehaviors.register();
+        EntityPossessionBehaviors.register();
 
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
             var data = entity.getAttached(ModDataAttachments.POSSESSABLE);

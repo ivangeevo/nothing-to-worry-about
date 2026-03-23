@@ -18,7 +18,10 @@ public class ModEntityTagProvider extends FabricTagProvider.EntityTypeTagProvide
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
         getOrCreateTagBuilder(ModTags.EntityTypes.POSSESSABLE)
                 .add(EntityType.SHEEP)
-                .add(EntityType.CHICKEN);
+                .add(EntityType.CHICKEN)
+                .add(EntityType.COW)
+                .add(EntityType.VILLAGER)
+                .add(EntityType.SQUID);
     }
 
 }

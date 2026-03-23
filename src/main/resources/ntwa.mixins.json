@@ -4,6 +4,7 @@
   "package": "org.btwr.ntwa.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AnimalEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1

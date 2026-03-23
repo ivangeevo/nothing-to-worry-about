@@ -16,7 +16,7 @@ public class ModDataAttachments {
     public static final AttachmentType<PossessionData> POSSESSABLE = AttachmentRegistry.create(
             Identifier.of(NTWAMod.MOD_ID, "possessable"),
             builder -> builder
-                    .initializer(() -> new PossessionData(-1, 0))
+                    .initializer(PossessionData::new)
                     .persistent(PossessionData.CODEC)
                     .syncWith(PossessionData.PACKET_CODEC, AttachmentSyncPredicate.all())
     );
