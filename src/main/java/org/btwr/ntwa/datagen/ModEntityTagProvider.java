@@ -21,7 +21,8 @@ public class ModEntityTagProvider extends FabricTagProvider.EntityTypeTagProvide
                 .add(EntityType.CHICKEN)
                 .add(EntityType.COW)
                 .add(EntityType.VILLAGER)
-                .add(EntityType.SQUID);
+                .add(EntityType.SQUID)
+                .add(EntityType.WOLF);
     }
 
 }

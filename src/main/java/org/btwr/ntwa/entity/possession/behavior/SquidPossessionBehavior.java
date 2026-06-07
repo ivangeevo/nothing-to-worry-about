@@ -1,16 +1,12 @@
-package org.btwr.ntwa.entity.possession;
+package org.btwr.ntwa.entity.possession.behavior;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.passive.SquidEntity;
-import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import org.btwr.ntwa.data.PossessionData;
@@ -21,20 +17,18 @@ public class SquidPossessionBehavior {
         if (!(livingEntity instanceof SquidEntity squid)) return;
         if (!data.isFullyPossessed()) return;
 
+        var squidData = data.getOrCreate(PossessionData.SquidData.class, PossessionData.SquidData::new);
+
         // countdown to next leap
-        if (data.getSquidLeapCountdown() > 0) {
-            data.setSquidLeapCountdown(data.getSquidLeapCountdown() - 1);
+        if (squidData.leapCountdown > 0) {
+            squidData.leapCountdown--;
         }
 
-        // propulsion phase (THIS is what you're missing)
-        if (data.getSquidPropulsionTicks() > 0) {
+        // propulsion phase
+        if (squidData.propulsionTicks > 0) {
             double speed = 0.6;
 
-            squid.setVelocity(
-                    data.getSquidLaunchX() * speed,
-                    1.0,
-                    data.getSquidLaunchZ() * speed
-            );
+            squid.setVelocity(squidData.launchX * speed, 1.0, squidData.launchZ * speed);
 
             squid.velocityModified = true;
             Vec3d vel = squid.getVelocity();
@@ -42,31 +36,29 @@ public class SquidPossessionBehavior {
             float yaw = (float)(Math.atan2(vel.z, vel.x) * (180 / Math.PI)) - 90f;
             float pitch = (float)(-(Math.atan2(vel.y, Math.sqrt(vel.x * vel.x + vel.z * vel.z)) * (180 / Math.PI)));
 
-            //squid.setYaw(yaw);
-            //squid.setPitch(pitch);
             squid.setYaw(MathHelper.lerp(0.3f, squid.getYaw(), yaw));
             squid.setPitch(MathHelper.lerp(0.3f, squid.getPitch(), pitch));
             squid.bodyYaw = yaw;
 
-            data.setSquidPropulsionTicks(data.getSquidPropulsionTicks() - 1);
+            squidData.propulsionTicks--;
         }
 
         // try to start a leap
-        if (data.getSquidLeapCountdown() <= 0 && squid.isTouchingWater()) {
-            startLeap(squid, data);
+        if (squidData.leapCountdown <= 0 && squid.isTouchingWater()) {
+            startLeap(squid, squidData);
         }
 
         // ghast conversion
-        tryGhastTransform(squid, data);
+        tryGhastTransform(squid, squidData);
     }
 
-    private static void startLeap(SquidEntity squid, PossessionData data) {
-        data.setSquidLeapCountdown(200); // 10 seconds
+    private static void startLeap(SquidEntity squid, PossessionData.SquidData squidData) {
+        squidData.leapCountdown = 200; // 10 seconds
 
-        data.setSquidGhastRoll(squid.getRandom().nextFloat());
+        squidData.ghastRoll = squid.getRandom().nextFloat();
 
         if (squid.isTouchingWater()) {
-            data.setSquidPropulsionTicks(10);
+            squidData.propulsionTicks = 10;
 
             squid.playSound(
                     SoundEvents.ENTITY_GENERIC_SPLASH,
@@ -83,11 +75,11 @@ public class SquidPossessionBehavior {
                     (squid.getRandom().nextDouble() - 0.5) * 0.3
             ).normalize();
 
-            data.setSquidLaunchX(dir.x);
-            data.setSquidLaunchZ(dir.z);
+            squidData.launchX = dir.x;
+            squidData.launchZ = dir.z;
 
         } else {
-            data.setSquidPropulsionTicks(0);
+            squidData.propulsionTicks = 0;
 
             squid.playSound(
                     SoundEvents.ENTITY_SLIME_JUMP,
@@ -97,14 +89,14 @@ public class SquidPossessionBehavior {
         }
     }
 
-    private static void tryGhastTransform(SquidEntity squid, PossessionData data) {
+    private static void tryGhastTransform(SquidEntity squid, PossessionData.SquidData squidData) {
         if (squid.getWorld().isClient()) return;
 
         // must be falling after leap
         if (squid.isTouchingWater()) return;
         if (squid.getVelocity().y > 0) return;
 
-        if (data.getSquidGhastRoll() > 0.25f) return;
+        if (squidData.ghastRoll > 0.25f) return;
 
         ServerWorld world = (ServerWorld) squid.getWorld();
 

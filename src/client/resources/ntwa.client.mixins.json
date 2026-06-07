@@ -4,6 +4,8 @@
   "package": "org.btwr.ntwa.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "WolfEntityModelMixin",
+    "WolfEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

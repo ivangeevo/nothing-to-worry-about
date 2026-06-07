@@ -10,13 +10,21 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.btwr.ntwa.data.ModDataAttachments;
 import org.btwr.ntwa.data.PossessionData;
+import org.btwr.ntwa.entity.possession.behavior.*;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
 public class PossessionManager {
 
-    private static final Map<EntityType<?>, BiConsumer<LivingEntity, PossessionData>> BEHAVIORS = EntityPossessionBehaviors.TICK_BEHAVIORS;
+    public static final Map<EntityType<?>, BiConsumer<LivingEntity, PossessionData>> BEHAVIORS = new HashMap<>();
+
+    public static void registerBehaviors() {
+        BEHAVIORS.put(EntityType.SHEEP, SheepPossessionBehavior::tick);
+        BEHAVIORS.put(EntityType.SQUID, SquidPossessionBehavior::tick);
+        BEHAVIORS.put(EntityType.WOLF, WolfPossessionBehavior::tick);
+    }
 
     public static PossessionSource<?> determineSource(LivingEntity entity) {
         var world = entity.getWorld();
@@ -54,11 +62,7 @@ public class PossessionManager {
         }
     }
 
-    public static boolean spreadPossession(
-            LivingEntity source,
-            double range,
-            PossessionSource reason
-    ) {
+    public static boolean spreadPossession(LivingEntity source, double range, PossessionSource reason) {
         var world = source.getWorld();
 
         for (LivingEntity target : world.getEntitiesByClass(

@@ -1,30 +1,14 @@
-package org.btwr.ntwa.entity.possession;
+package org.btwr.ntwa.entity.possession.behavior;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.SheepEntity;
-import net.minecraft.entity.passive.SquidEntity;
-import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.btwr.ntwa.data.PossessionData;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.BiConsumer;
+public class SheepPossessionBehavior {
 
-public class EntityPossessionBehaviors {
-
-    public static final Map<EntityType<?>, BiConsumer<LivingEntity, PossessionData>> TICK_BEHAVIORS = new HashMap<>();
-
-    public static void register() {
-        TICK_BEHAVIORS.put(EntityType.SHEEP, EntityPossessionBehaviors::tickSheep);
-        TICK_BEHAVIORS.put(EntityType.SQUID, SquidPossessionBehavior::tick);
-    }
-
-    private static void tickSheep(LivingEntity entity, PossessionData data) {
+    public static void tick(LivingEntity entity, PossessionData data) {
         if (!(entity instanceof SheepEntity sheep)) return;
         if (!data.isFullyPossessed() || sheep.isSheared() || sheep.isDead()) return;
 

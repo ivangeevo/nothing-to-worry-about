@@ -1,4 +1,4 @@
-package org.btwr.ntwa.entity.possession;
+package org.btwr.ntwa.entity.possession.behavior;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
