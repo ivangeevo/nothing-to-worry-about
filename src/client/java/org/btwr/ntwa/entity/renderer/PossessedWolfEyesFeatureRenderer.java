@@ -16,8 +16,9 @@ import org.btwr.ntwa.data.PossessionData;
 
 public class PossessedWolfEyesFeatureRenderer extends FeatureRenderer<WolfEntity, WolfEntityModel<WolfEntity>> {
 
-    private static final Identifier TEXTURE =
-            Identifier.of(NTWAMod.MOD_ID, "textures/entity/wolf/wolf_possessed_eyes.png");
+    private static final Identifier TEXTURE = Identifier.of(
+            NTWAMod.MOD_ID, "textures/entity/wolf/wolf_possessed_eyes.png"
+    );
 
     public PossessedWolfEyesFeatureRenderer(
             FeatureRendererContext<WolfEntity, WolfEntityModel<WolfEntity>> context) {

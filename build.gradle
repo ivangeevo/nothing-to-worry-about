@@ -45,9 +45,8 @@ dependencies {
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    //modImplementation("maven.modrinth:btwr-shared-library:${project.btwr_sl_version}")
-    modImplementation files("libs/btwr-shared-library-${project.btwr_sl_version}.jar")
-
+    modImplementation("maven.modrinth:btwr-shared-library:${project.btwr_sl_version}")
+    //modImplementation files("libs/btwr-shared-library-${project.btwr_sl_version}.jar")
 }
 
 processResources {
