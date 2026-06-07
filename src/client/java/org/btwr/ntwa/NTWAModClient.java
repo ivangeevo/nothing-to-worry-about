@@ -27,7 +27,6 @@ public class NTWAModClient implements ClientModInitializer {
                 wolfData.attempting = true;
                 wolfData.attemptCountdown = WolfPossessionBehavior.ATTEMPT_DURATION;
                 wolfData.didHeadSpin = false;
-                System.out.println("NTWA CLIENT: received packet, set attempting=true for wolf " + wolf.getId());
             });
         });
 

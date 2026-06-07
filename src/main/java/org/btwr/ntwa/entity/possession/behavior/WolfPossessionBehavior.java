@@ -26,11 +26,9 @@ public class WolfPossessionBehavior {
             wolfData.attempting = true;
             wolfData.attemptCountdown = ATTEMPT_DURATION;
             wolfData.didHeadSpin = false;
-            System.out.println("NTWA SERVER: attempt started for wolf " + wolf.getId());
 
             // Send ONCE when attempt begins
             PlayerLookup.tracking(wolf).forEach(player -> {
-                System.out.println("NTWA SERVER: sending packet to " + player.getName().getString());
                 ServerPlayNetworking.send(player, new WolfAttemptingPayload(wolf.getId(), true));
             }
             );
