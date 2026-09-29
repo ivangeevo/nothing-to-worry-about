@@ -6,6 +6,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.ChickenEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionTypes;
 import org.btwr.ntwa.data.ModDataAttachments;
@@ -63,12 +65,14 @@ public class PossessionManager {
     }
 
     public static boolean spreadPossession(LivingEntity source, double range, PossessionSource reason) {
-        var world = source.getWorld();
+        return trySpreadPossession(source.getWorld(), source.getBoundingBox().expand(range), source);
+    }
 
+    private static boolean trySpreadPossession(World world, Box box, LivingEntity exclude) {
         for (LivingEntity target : world.getEntitiesByClass(
                 LivingEntity.class,
-                source.getBoundingBox().expand(range),
-                e -> e != source
+                box,
+                e -> e != exclude
         )) {
             var data = target.getAttached(ModDataAttachments.POSSESSABLE);
 
@@ -79,6 +83,35 @@ public class PossessionManager {
         }
 
         return false;
+    }
+
+    private static final double SOUL_URN_MISS_RANGE = 4.0;
+
+    public static boolean onSoulUrnHit(LivingEntity target, PossessionSource reason) {
+        var data = target.getAttached(ModDataAttachments.POSSESSABLE);
+        if (data == null || data.isPossessed()) return false;
+
+        initiatePossession(target, data);
+        return true;
+    }
+
+    public static boolean onSoulUrnMiss(World world, Vec3d pos, PossessionSource reason) {
+        return trySpreadPossession(world, Box.of(pos, SOUL_URN_MISS_RANGE * 2, SOUL_URN_MISS_RANGE * 2, SOUL_URN_MISS_RANGE * 2), null);
+    }
+
+    private static final double HOPPER_POSSESSION_RANGE = 16.0;
+
+    public static boolean onHopperFilteringFailure(World world, BlockPos pos, PossessionSource reason) {
+        return trySpreadPossessionAt(world, pos, HOPPER_POSSESSION_RANGE);
+    }
+
+    public static boolean onHopperExplosion(World world, BlockPos pos, PossessionSource reason) {
+        return trySpreadPossessionAt(world, pos, HOPPER_POSSESSION_RANGE);
+    }
+
+    private static boolean trySpreadPossessionAt(World world, BlockPos pos, double range) {
+        Vec3d center = pos.toCenterPos();
+        return trySpreadPossession(world, Box.of(center, range * 2, range * 2, range * 2), null);
     }
 
     private static final int PORTAL_CHECK_INTERVAL = 20; // once per second (20 ticks)

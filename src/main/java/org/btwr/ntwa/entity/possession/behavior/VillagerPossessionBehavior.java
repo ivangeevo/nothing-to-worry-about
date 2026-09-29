@@ -4,20 +4,22 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.WitchEntity;
 import net.minecraft.entity.passive.VillagerEntity;
+import net.minecraft.world.World;
 
 public class VillagerPossessionBehavior {
 
     public static void onFullPossession(VillagerEntity villager) {
-        if (villager.getWorld().isClient) return; // Only run on the server
+        World world = villager.getWorld();
+        
+        if (world.isClient) return;
 
         // Play transformation particle/sound effect
-        villager.getWorld().sendEntityStatus(villager, (byte) 60); // optional: custom byte for your effect
+        world.sendEntityStatus(villager, (byte) 60);
 
         // Remove the original villager
         villager.remove(Entity.RemovalReason.DISCARDED);
 
-        // Create the Witch entity
-        WitchEntity witch = EntityType.WITCH.create(villager.getWorld());
+        WitchEntity witch = EntityType.WITCH.create(world);
         if (witch == null) return;
 
         // Set Witch position and rotation to match Villager
@@ -29,9 +31,7 @@ public class VillagerPossessionBehavior {
 
         // Make persistent so it doesn’t despawn
         witch.setPersistent();
-
-        // Spawn the Witch in the world
-        villager.getWorld().spawnEntity(witch);
+        world.spawnEntity(witch);
     }
 
 }

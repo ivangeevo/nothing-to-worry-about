@@ -47,6 +47,7 @@ dependencies {
 
     modImplementation("maven.modrinth:btwr-shared-library:${project.btwr_sl_version}")
     //modImplementation files("libs/btwr-shared-library-${project.btwr_sl_version}.jar")
+
 }
 
 processResources {

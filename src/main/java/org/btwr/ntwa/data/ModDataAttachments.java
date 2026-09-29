@@ -24,11 +24,13 @@ public class ModDataAttachments {
     public static void register() {
         NTWAMod.LOGGER.info("Registering {} attachments", NTWAMod.MOD_ID);
 
-        BTWREvents.LIVING_TICK.add(living -> {
-            if (living.getType().isIn(ModTags.EntityTypes.POSSESSABLE)) {
-                tickAndSync(POSSESSABLE, living);
-            }
-        });
+        BTWREvents.LIVING_TICK.add(ModDataAttachments::tickPossessable);
+    }
+
+    private static void tickPossessable(LivingEntity living) {
+        if (living.getType().isIn(ModTags.EntityTypes.POSSESSABLE)) {
+            tickAndSync(POSSESSABLE, living);
+        }
     }
 
     private static <T extends Entity, A extends EntityAttachmentBase<T>> void tickAndSync(AttachmentType<A> type, LivingEntity entity) {
