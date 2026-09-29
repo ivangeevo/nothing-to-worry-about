@@ -57,7 +57,7 @@ public class WolfPossessionBehavior {
         }
     }
 
-    public static void tickClient(WolfEntity wolf, PossessionData data) {
+    public static void tickClient(PossessionData data) {
         var wolfData = data.getOrCreate(PossessionData.WolfData.class, PossessionData.WolfData::new);
 
         if (wolfData.attempting) {

@@ -13,19 +13,14 @@ public class CowPossessionBehavior {
         var dataA = parent.getAttached(ModDataAttachments.POSSESSABLE);
         var dataB = mate.getAttached(ModDataAttachments.POSSESSABLE);
 
-        boolean possessed =
-                (dataA != null && dataA.isFullyPossessed()) ||
-                        (dataB != null && dataB.isFullyPossessed());
+        boolean possessed = (dataA != null && dataA.isFullyPossessed()) || (dataB != null && dataB.isFullyPossessed());
 
         if (!possessed) return false;
 
-        // 1/8 chance → normal baby (no corruption)
+        // 1/8 chance → normal baby
         if (world.random.nextInt(8) == 0) return false;
 
-        // --- corruption happens ---
-        boolean doMutant =
-                world.getRegistryKey() != World.END &&
-                        world.random.nextInt(2) == 0;
+        boolean doMutant = world.getRegistryKey() != World.END && world.random.nextInt(2) == 0;
 
         if (doMutant) {
             spawnCorruptedBirth(world, pos);

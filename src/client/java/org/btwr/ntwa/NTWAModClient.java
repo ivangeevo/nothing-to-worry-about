@@ -37,7 +37,7 @@ public class NTWAModClient implements ClientModInitializer {
             for (WolfEntity entity : world.getEntitiesByClass(WolfEntity.class, searchBox, e -> true)) {
                 var data = entity.getAttached(ModDataAttachments.POSSESSABLE);
                 if (data != null) {
-                    WolfPossessionBehavior.tickClient(entity, data);
+                    WolfPossessionBehavior.tickClient(data);
                 }
             }
         });
